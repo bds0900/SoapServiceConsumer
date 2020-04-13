@@ -1,0 +1,80 @@
+{"Services": [
+  {
+    "Id": "0",
+    "Name": "Calculator",
+    "URL": "http://www.dneonline.com/calculator.asmx",
+    "Method": [
+      {
+        "Name": "Add",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Add"
+      },
+      {
+        "Name": "Subtract",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Subtract"
+      },
+      {
+        "Name": "Multiply",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Multiply"
+      },
+      {
+        "Name": "Divide",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Divide"
+      }
+    ]
+  },
+  {
+    "Id": "1",
+    "Name": "Calculator",
+    "URL": "http://www.dneonline.com/calculator.asmx",
+    "Method": [
+      {
+        "Name": "Add",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Add"
+      },
+      {
+        "Name": "Subtract",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Subtract"
+      },
+      {
+        "Name": "Multiply",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Multiply"
+      },
+      {
+        "Name": "Divide",
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Divide"
+      }
+    ]
+  }
+]}

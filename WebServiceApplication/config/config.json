@@ -1,0 +1,255 @@
+{"Services": [
+  {
+    "Id": "0",
+    "Name": "Calculator",
+    "URL": "http://www.dneonline.com/calculator.asmx",
+    "TargetNamespace": "http://tempuri.org/",
+    "Agent":"",
+    "Methods": [
+      {
+        "Name": "Add",
+        "Dependency":{},
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Add"
+      },
+      {
+        "Name": "Subtract",
+        "Dependency":{},
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Subtract"
+      },
+      {
+        "Name": "Multiply",
+        "Dependency":{},
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Multiply"
+      },
+      {
+        "Name": "Divide",
+        "Dependency":{},
+        "Parameters": {
+          "intA": "int",
+          "intB": "int"
+        },
+        "SoapAction": "http://tempuri.org/Divide"
+      }
+    ]
+  },
+  {
+    "Id": "1",
+    "Name": "ip",
+    "URL": "http://ws.cdyne.com/ip2geo/ip2geo.asmx",
+    "TargetNamespace": "http://ws.cdyne.com/",
+    "Agent":"",
+    "Methods": [
+      {
+        "Name": "ResolveIP",
+        "Dependency":{},
+        "Parameters": {
+          "ipAddress": "string",
+          "licenseKey": "string"
+        },
+        "SoapAction": "http://ws.cdyne.com/ResolveIP"
+      }
+    ]
+  },
+  {
+    "Id": "2",
+    "Name": "Phone",
+    "URL": "http://ws.cdyne.com/phoneverify/phoneverify.asmx",
+    "TargetNamespace": "http://ws.cdyne.com/PhoneVerify/query",
+    "Agent":"",
+    "Methods": [
+      {
+        "Name": "CheckPhoneNumber",
+        "Dependency":{},
+        "Parameters": {
+          "PhoneNumber": "string",
+          "LicenseKey": "string"
+        },
+        "SoapAction": "http://ws.cdyne.com/PhoneVerify/query/CheckPhoneNumber"
+      },
+      {
+        "Name": "CheckPhoneNumbers",
+        "Dependency":{},
+        "Parameters": {
+          "PhoneNumbers": "s:ArrayOfString",
+          "LicenseKey": "string"
+        },
+        "SoapAction": "http://ws.cdyne.com/PhoneVerify/query/CheckPhoneNumbers"
+      }
+    ]
+  },
+  {
+    "Id": "3",
+    "Name": "Dic",
+    "URL": "http://services.aonaware.com/DictService/DictService.asmx",
+    "TargetNamespace": "http://services.aonaware.com/webservices/",
+    "Agent":"",
+    "Methods": [
+      {
+        "Name": "ServerInfo",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://services.aonaware.com/webservices/ServerInfo"
+      },
+      {
+        "Name": "DictionaryList",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://services.aonaware.com/webservices/DictionaryList"
+      },
+      {
+        "Name": "DictionaryListExtended",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://services.aonaware.com/webservices/DictionaryListExtended"
+      },
+      {
+        "Name": "DictionaryInfo",
+        "Dependency":"DictionaryList",
+        "Parameters": {
+          "dictId": "string"
+        },
+        "SoapAction": "http://services.aonaware.com/webservices/DictionaryInfo"
+      },
+      {
+        "Name": "Define",
+        "Dependency":{},
+        "Parameters": {
+          "word": "string"
+        },
+        "SoapAction": "http://services.aonaware.com/webservices/Define"
+      },
+      {
+        "Name": "DefineInDict",
+        "Dependency":"DictionaryList",
+        "Parameters": {
+          "dictId": "string",
+          "word": "string"
+        },
+        "SoapAction": "http://services.aonaware.com/webservices/DefineInDict"
+      },
+      {
+        "Name": "StrategyList",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://services.aonaware.com/webservices/StrategyList"
+      },
+      {
+        "Name": "Match",
+        "Dependency":"StrategyList",
+        "Parameters": {
+          "word": "string",
+          "strategy": "string"
+        },
+        "SoapAction": "http://services.aonaware.com/webservices/Match"
+      },
+      {
+        "Name": "MatchInDict",
+        "Dependency":{},
+        "Parameters": {
+          "dictId": "string",
+          "word": "string",
+          "strategy": "string"
+        },
+        "SoapAction": "http://services.aonaware.com/webservices/MatchInDict"
+      }
+    ]
+  },
+  {
+    "Id": "4",
+    "Name": "currency",
+    "URL": "http://currencyconverter.kowabunga.net/converter.asmx",
+    "TargetNamespace": "http://tempuri.org/",
+    "Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "Methods": [
+      {
+        "Name": "GetCurrencies",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://tempuri.org/GetCurrencies"
+      },
+      {
+        "Name": "GetLastUpdateDate",
+        "Dependency":{},
+        "Parameters": {},
+        "SoapAction": "http://tempuri.org/GetLastUpdateDate"
+      },
+      {
+        "Name": "GetConversionAmount",
+        "Dependency":{},
+        "Parameters": {
+          "CurrencyFrom": "string",
+          "CurrencyTo": "string",
+          "RateDate":"dateTime",
+          "Amount":"decimal"
+        },
+        "SoapAction": "http://tempuri.org/GetConversionAmount"
+      }
+    ]
+  },
+  {
+    "Id": "5",
+    "Name": "Case",
+    "URL": "http://localhost/TextService/Case.asmx",
+    "TargetNamespace": "http://localhost/TextService/",
+    "Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "Methods": [
+      {
+        "Name": "CaseConvert",
+        "Dependency":{},
+        "Parameters": {
+          "incoming": "string",
+          "flag": "unsignedInt"
+        },
+        "SoapAction": "http://localhost/TextService/CaseConvert"
+      }
+    ]
+  },
+  {
+    "Id": "6",
+    "Name": "Loan",
+    "URL": "http://localhost/VinniesLoanService/Loan.asmx",
+    "TargetNamespace": "http://localhost/VinniesLoanService/",
+    "Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "Methods": [
+      {
+        "Name": "LoanPayment",
+        "Dependency":{},
+        "Parameters": {
+          "principle": "float",
+          "rate": "float",
+          "payments": "unsignedInt"
+        },
+        "SoapAction": "http://localhost/VinniesLoanService/LoanPayment"
+      }
+    ]
+  },
+  {
+    "Id": "7",
+    "Name": "Resolve",
+    "URL": "http://localhost/ResolveIP/Resolve.asmx",
+    "TargetNamespace": "http://localhost/ResolveIP/",
+    "Agent":"Mozilla/5.0 (Windows NT 6.3; WOW64; rv:31.0) Gecko/20100101 Firefox/31.0",
+    "Methods": [
+      {
+        "Name": "GetInfo",
+        "Dependency":{},
+        "Parameters": {
+          "ipAddress": "string"
+        },
+        "SoapAction": "http://localhost/ResolveIP/GetInfo"
+      }
+    ]
+  }
+]}

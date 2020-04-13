@@ -1,0 +1,461 @@
+﻿@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+<!--
+File: Index.cshtml
+Project: Assignment2
+Programmer: Doosan Beak
+First Version: 2019-09-24
+Descrption: This file has javascript code that manipulate html to display result dynamically
+-->
+<header>
+    <style>
+        #test {
+            width: 100%;
+            height: 100%;
+        }
+
+        table {
+            margin: 0 auto; /* or margin: 0 auto 0 auto */
+        }
+    </style>
+</header>
+
+<div class="text-center">
+    <h1 class="display-4">Welcome</h1>
+
+
+
+    <form method="post" asp-page-handler="getresult"></form>
+    <p>Service List</p>
+    <select asp-for="WebService" asp-items="@(new SelectList(Model.ServiceList, "Id", "Name"))" onchange="getMethods()">
+        <option value="">Choose a service</option>
+    </select>
+
+    <div id="method"></div>
+    <div id="inputs"></div>
+
+    <div id="table"></div>
+
+
+</div>
+
+
+
+
+
+@section Scripts {
+    <script>
+        // global veriable method list
+        var methods
+
+        /*
+        Function : getMethods
+        DESCRIPTION : This function gets methods from the selected service
+        PARAMETERS : no parameters
+        RETURNS : no return
+        */
+        function getMethods() {
+            var service = document.getElementById("WebService").value;
+            if (service == "") {
+                service = null;
+            }
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+
+
+                    methods = JSON.parse(this.responseText).methods;
+                    if (methods) {
+
+                        if (document.querySelector("#methodList") != null) {
+                            //clear method list
+                            document.querySelector("#methodList").remove();
+                            //clear input elements
+                            var myInput = document.querySelector("#inputs");
+                            while (myInput.firstChild) {
+                                myInput.removeChild(myInput.firstChild);
+                            }
+                            if (document.querySelector("#myTable"))
+                                document.querySelector("#myTable").remove();
+                        }
+
+                        //create a select element
+                        var methodList = document.createElement("select");
+                        methodList.id = "methodList";
+                        methodList.name = "method";
+                        methodList.appendChild(new Option("Choose a method", ""));
+
+                        //add method names in select element as options
+                        var count;
+                        for (count = 0; count < methods.length; count++) {
+
+                            methodList.appendChild(new Option(methods[count]["name"], count));
+                        }
+                        //finish making a dropdown list! add it to 'method' div
+                        document.querySelector("#method").appendChild(methodList);
+                        methodList.onchange = getParam
+
+
+                    }
+                    else {// if methods is null, clear the method list, input boxes and table
+
+                        //clear method list
+                        document.querySelector("#methodList").remove();
+                        //clear input elements
+                        var myInput = document.querySelector("#inputs");
+                        while (myInput.firstChild) {
+                            myInput.removeChild(myInput.firstChild);
+                        }
+                        if (document.querySelector("#myTable")) {
+                            document.querySelector("#myTable").remove();
+
+                        }
+
+                    }
+
+                }
+                else if (this.readyState == 4) {
+
+                }
+
+            };
+            //handler=Methods calls onGetMethods function
+            xhr.open('GET', '/index?handler=Methods&serviceId=' + service);
+            xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+            xhr.onerror = function (error) {
+
+            };
+            xhr.send();
+        }
+
+        /*
+        Function : getParam
+        DESCRIPTION : This function generates input boxes for parameters according to the selected method
+        PARAMETERS : no parameters
+        RETURNS : no return
+        */
+        function getParam() {
+
+            //clear input elements
+            var myInput = document.querySelector("#inputs");
+            while (myInput.firstChild) {
+                myInput.removeChild(myInput.firstChild);
+            }
+
+            var warning = document.querySelector("#table");
+            while (warning.firstChild) {
+                warning.removeChild(warning.firstChild);
+            }
+            if (document.querySelector("#myTable")) {
+                document.querySelector("#myTable").remove();
+            }
+
+            var method = methods[document.querySelector("#methodList").value];
+
+            for (key in method["parameters"]) {
+
+                // label the parameter name
+                var label = document.createElement("label");
+                label.name = key
+                label.innerHTML = key + "<b>(" + method["parameters"][key] + ")<b>";
+                document.querySelector("#inputs").appendChild(label);
+
+                var br = document.createElement("br");
+                document.querySelector("#inputs").appendChild(br)
+                //create input box
+                var input = document.createElement("input");
+                input.type = "text";
+                input.id = key;
+                document.querySelector("#inputs").appendChild(input);
+
+                var br = document.createElement("br");
+                document.querySelector("#inputs").appendChild(br)
+
+            }
+            // if this method has dependency then get the list from the dependency method
+            if (method["dependency"]) {
+                dictioanryList(methods);
+            }
+
+            var button = document.createElement("button");
+            button.type = "submit"
+            button.innerHTML = "submit";
+            button.id = "button";
+            button.onclick = result;
+            document.querySelector("#inputs").appendChild(button);
+        }
+
+        /*
+        Function : result
+        DESCRIPTION : This function sends request and gets response
+        PARAMETERS : no parameters
+        RETURNS : no return
+        */
+        function result() {
+            var method = methods[document.querySelector("#methodList").value];
+            var tf = true;// true false
+            //var warning = document.querySelector("#table");
+            ////if table is not empty clear the table first
+            //while (warning.firstChild) {
+            //    warning.removeChild(warning.firstChild);
+            //}
+            
+            //validataion input
+            for (var key in method["parameters"]) {
+                var mytable = document.querySelector("#table");
+                            while (mytable.firstChild) {
+                                mytable.removeChild(mytable.firstChild);
+                }
+                
+                var inputVal = document.getElementById(key).value;
+                var warning = document.createElement("label");
+                warning.id = "warning";
+                if (method["parameters"][key] === "string" && !chrValidity(inputVal)) {
+                    tf = false;
+                    warning.innerHTML = "your input is not <b>string</b> type"
+                }
+                else if (method["parameters"][key] === "int" && !numValidity(inputVal)) {
+                    tf = false;
+                    warning.innerHTML = "your input is not <b>int</b> type"
+                }
+                else if (method["parameters"][key] === "boolean" && !booleanValidity(inputVal)) {
+                    tf = false;
+                    warning.innerHTML = "your input is not <b>boolean</b> type"
+                }
+                else {
+
+                }
+                document.querySelector("#table").append(warning)
+            }
+
+            if (tf) {
+                var xhr = new XMLHttpRequest();
+                xhr.onreadystatechange = function () {
+                    
+                    if (xhr.readyState == 4 && xhr.status == 200) {
+                        
+                        if (JSON.parse(this.responseText).status == "Fail") {
+
+                        }
+                        // clear the table first
+                        if (document.querySelector("#myTable")) {
+                            document.querySelector("#myTable").remove();
+                        }
+
+                        // name a object table
+                        var table = JSON.parse(this.responseText).table;
+                        createTable(table);
+                    }
+                }
+                //handler=Result
+                xhr.open("get", "/index?handler=Result&" + generateRequest());
+                xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                xhr.send();
+            }
+
+        }
+        /*
+        Function : generateRequest
+        DESCRIPTION : This function gets serice id, method id and parameters from the form and make into a request string
+        PARAMETERS : no parameters
+        RETURNS : no return
+        */
+        function generateRequest() {
+
+            var service = document.querySelector("#WebService").value;
+            var methodName = document.querySelector("#methodList").value
+            var method = methods[document.querySelector("#methodList").value];
+            var request = "webService=" + service + "&method=" + methodName;
+            var arr = new Array();
+            for (var key in method["parameters"]) {
+                var inputval = document.getElementById(key);
+                arr.push(inputval.value);
+
+            }
+            return request = request + "&arr=" + JSON.stringify(arr);
+        }
+        /*
+        Function : createTable
+        DESCRIPTION : This function get table from the response
+        PARAMETERS : table: an array that contains key,value pair of response
+        RETURNS : no return
+        */
+    function createTable(table) {
+        var mytable = document.querySelector("#table");
+                            while (mytable.firstChild) {
+                                mytable.removeChild(mytable.firstChild);
+                            }
+            // create a table
+            var tbl = document.createElement("table");
+            tbl.setAttribute("id", "myTable");
+
+            // select the table <div>
+            document.querySelector("#table").appendChild(tbl);
+            var tblBody = document.createElement("tbody");
+
+            for (var i = 0; i < table.length; i++) {
+
+                for (let key in table[i]) {
+                    var row = document.createElement("tr");
+
+                    //this is key
+                    var cell = document.createElement("td");
+                    var cellText = document.createTextNode(key);
+                    cell.appendChild(cellText);
+
+                    // this is value
+                    var cell2 = document.createElement("td");
+                    cellText = document.createTextNode(table[i][key]);
+                    cell2.appendChild(cellText);
+
+                    row.appendChild(cell);
+                    row.appendChild(cell2);
+                    tblBody.appendChild(row);
+
+                }
+
+                //append the contents to the table
+                tbl.appendChild(tblBody);
+                tbl.setAttribute("border", "2");
+                tbl.style.width = '100px';
+                tbl.style.border = '1px solid black';
+
+            }
+
+
+        }
+        /*
+        Function : autoFill
+        DESCRIPTION : This function get list from the dependency method
+        PARAMETERS : methods: an array that has the array of methods
+        RETURNS : no return
+        */
+        function dictioanryList(methods) {
+            //select method
+            var method = methods[document.querySelector("#methodList").value];
+            //get the name of dependecy method
+            var dependMethod = method["dependency"];
+            for (var i = 0; i < methods.length; i++) {
+                // if the dependecy method is found send the request
+                if (methods[i]["name"] === dependMethod) {
+
+                    var xhr = new XMLHttpRequest();
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            var table = JSON.parse(this.responseText).table;
+                            //create dropdown list
+                            var dictionaryList = document.createElement("select");
+                            dictionaryList.id = "dictionaryList";
+                            dictionaryList.appendChild(new Option("Choose a dictionary", ""));
+
+                            // fill the dropdown list
+                            for (var i = 0; i < table.length; i++) {
+                                for (let key in table[i]) {
+                                    if (key === "Id") {
+
+                                        if (dependMethod === "DictionaryList")
+                                            dictionaryList.appendChild(new Option(table[i]["Name"], table[i][key]));
+                                        else (dependMethod === "StrategyList")
+                                        dictionaryList.appendChild(new Option(table[i]["Strategy"], table[i][key]));
+                                    }
+                                }
+
+                            }
+
+                            document.querySelector("#table").append(dictionaryList);
+                            dictionaryList.onchange = autoFill;
+                        }
+                    }
+                    // handler=Result calls onGetResult function
+                    var service = document.querySelector("#WebService").value;
+                    xhr.open("get", "/index?handler=Result&webService=" + service + "&method=" + i + "&arr=[]");
+                    xhr.setRequestHeader('Content-Type', 'application/json;charset=UTF-8');
+                    xhr.send();
+
+                }
+            }
+        }
+
+        /*
+        Function : autoFill
+        DESCRIPTION : This function get a value from the dictionary or strategy list and fill the id input box
+        PARAMETERS : no parameters
+        RETURNS : no return
+        */
+        function autoFill() {
+            var dictionary = document.querySelector("#dictionaryList").value;
+            var dependency = methods[document.querySelector("#methodList").value]["dependency"];
+            if (dependency === "DictionaryList") {
+                document.getElementById("dictId").value = dictionary;
+                document.getElementById("dictId").innerHtml = dictionary;
+            }
+            else if (dependency === "StrategyList") {
+                document.getElementById("strategy").value = dictionary;
+                document.getElementById("strategy").innerHtml = dictionary;
+            }
+        }
+
+
+        /*
+        Function : numValidity
+        DESCRIPTION : This function checks if the user has entered a number.
+        PARAMETERS : isNum : a variable that will be checked
+        RETURNS : return true if the variable is a number, return false is the variable is not a number
+        */
+        function numValidity(isNum) {
+            // begin with number and end with number
+            var reg = new RegExp(/^[-0-9]+$/g);
+            var num = reg.test(isNum);
+            return num;
+        }
+        /*
+        Function : chrValidity
+        DESCRIPTION : This function checks if the user has entered a string.
+        PARAMETERS : isChr : a variable that will be checked
+        RETURNS : return true if the variable is a string, return false if the variable is not a string
+        */
+        function chrValidity(isChr) {
+
+
+            // begin with alphabet and end with alphabet
+            var reg = /^[A-Za-z0-9 ]+$/g;
+            var chr = reg.test(isChr);
+            if (!chr) {
+                var phoneNumReg = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+                chr = phoneNumReg.test(isChr);
+
+                if (!chr) {
+                    var IpReg = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
+                    chr = IpReg.test(isChr);
+
+                }
+            }
+            return chr
+
+        }
+        /*
+        Function : booleanValidity
+        DESCRIPTION : This function checks if the user has entered a true or false.
+        PARAMETERS : isBool : a variable that will be checked
+        RETURNS : return true if the variable is a "true", return false if the variable is "false"
+        */
+        function booleanValidity(isBool) {
+            var bool = true
+            if (isBool === "true") {
+                bool = true
+            }
+            else if (isBool === "false") {
+                bool = false
+            }
+            return bool
+        }
+
+
+
+
+
+    </script>
+}
